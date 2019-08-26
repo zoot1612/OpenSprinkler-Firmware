@@ -41,6 +41,8 @@
 	ESP8266WebServer *wifi_server = NULL;
   EthernetServer *m_server = 0;
   EthernetClient *m_client = 0;
+  EthernetClient g_etherClient;
+  WiFiClient g_wifiClient;  
 #else
   #include <SdFat.h>
   byte Ethernet::buffer[ETHER_BUFFER_SIZE]; // Ethernet packet buffer
@@ -74,7 +76,7 @@ void httpget_callback(byte, uint16_t, uint16_t);
 #define RTC_SYNC_INTERVAL       60      // RTC sync interval, 60 secs
 #define CHECK_NETWORK_INTERVAL  601     // Network checking timeout, 10 minutes
 #define CHECK_WEATHER_TIMEOUT   7201    // Weather check interval: 2 hours
-#define CHECK_WEATHER_SUCCESS_TIMEOUT 86433L // Weather check success interval: 24 hrs
+#define CHECK_WEATHER_SUCCESS_TIMEOUT 172833L // Weather check success interval: 48 hrs
 #define LCD_BACKLIGHT_TIMEOUT   15      // LCD backlight timeout: 15 secs
 #define PING_TIMEOUT            200     // Ping test timeout: 200 ms
 
@@ -583,6 +585,11 @@ void do_loop()
 
   // The main control loop runs once every second
   if (curr_time != last_time) {
+#if defined(ESP8266)
+		//os.lcd.setCursor(0, -1);
+		//os.lcd.print(ESP.getFreeHeap());
+#endif
+  
     last_time = curr_time;
     if (os.button_timeout) os.button_timeout--;
     
@@ -934,7 +941,6 @@ void do_loop()
     // perform ntp sync
     // instead of using curr_time, which may change due to NTP sync itself
     // we use Arduino's millis() method
-    //if (curr_time % NTP_SYNC_INTERVAL == 0) os.status.req_ntpsync = 1;
     if((millis()/1000) % NTP_SYNC_INTERVAL==0) os.status.req_ntpsync = 1;
     perform_ntp_sync();
 
@@ -974,6 +980,7 @@ void check_weather() {
   // - network check has failed, or
   // - the controller is in remote extension mode
   if (os.status.network_fails>0 || os.options[OPTION_REMOTE_EXT_MODE]) return;
+  if (os.status.program_busy) return;
   
 #ifdef ESP8266
   if (!m_server) {
@@ -1337,13 +1344,12 @@ void push_message(byte type, uint32_t lval, float fval, const char* sval) {
 
   #ifdef ESP8266
   Client *client;
-  if (m_server)
-    client = new EthernetClient();
-  else
-    client = new WiFiClient();
+	if (m_server)
+	  client = &g_etherClient;
+	else
+	  client = &g_wifiClient;
     
   if(!client->connect(server, 80)) {
-    delete client;
     return;
   }
   
@@ -1358,17 +1364,16 @@ void push_message(byte type, uint32_t lval, float fval, const char* sval) {
   client->write((uint8_t *)postBuffer, strlen(postBuffer));
 
   while(!client->available() && os.now_tz() < timeout) {
-  	yield();
+  	delay(0);
   }
 
   bzero(ether_buffer, ETHER_BUFFER_SIZE);
   
   while(client->available()) {
     client->read((uint8_t*)ether_buffer, ETHER_BUFFER_SIZE);
-    yield();
+    delay(0);
   }
   client->stop();
-  delete client;
   //DEBUG_PRINTLN(ether_buffer);
     
   #else

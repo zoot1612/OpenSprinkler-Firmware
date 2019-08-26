@@ -56,6 +56,7 @@ static void getweather_callback(byte status, uint16_t off, uint16_t len) {
 #else
   char *p = ether_buffer;
 #endif
+	DEBUG_PRINTLN(p);
   /* scan the buffer until the first & symbol */
   while(*p && *p!='&') {
     p++;
@@ -160,20 +161,37 @@ void GetWeather() {
   nvm_read_block(tmp_buffer, (void*)ADDR_NVM_WEATHERURL, MAX_WEATHERURL);
 
 #if defined(ESP8266)
+#define NTRIES 3
+  extern EthernetClient g_etherClient;
+  extern WiFiClient g_wifiClient;
   Client *client;
-  if (m_server) {
-    client = new EthernetClient();
-  } else {
-    if (os.state!=OS_STATE_CONNECTED || WiFi.status()!=WL_CONNECTED) return;
-    client = new WiFiClient();
+	if (m_server)
+	  client = &g_etherClient;
+	else
+	  client = &g_wifiClient;
+	  
+	if(!m_server) {
+		if (os.state!=OS_STATE_CONNECTED || WiFi.status()!=WL_CONNECTED) return;
+	}
+  byte nt;
+ 	for(nt=0;nt<NTRIES;nt++) {
+ 		DEBUG_PRINTLN(F("connection try"));
+ 		if(client->connect(tmp_buffer, 80)) break;
+ 		delay(500);
   }
-  client->connect(tmp_buffer, 80); 
+  if(nt==NTRIES) {
+  	DEBUG_PRINTLN(F("connection FAILED!"));
+  	return;
+  } else {
+  	DEBUG_PRINTLN(F("connection succeeded"));
+  }
+	
 #else
   ether.dnsLookup(tmp_buffer, true);
 #endif
 
-  char tmp[60];
-  read_from_file(wtopts_filename, tmp, 60);
+  char tmp[255];
+  read_from_file(wtopts_filename, tmp, 255);
 #ifdef ESP8266
   BufferFiller bf = tmp_buffer;
 #else  
@@ -211,24 +229,28 @@ void GetWeather() {
   strcat(urlBuffer, " HTTP/1.0\r\nHOST: ");
   strcat(urlBuffer, "*\r\n\r\n");
 
-  time_t timeout = os.now_tz() + 5; // 5 seconds timeout  
-  client->write((uint8_t *)urlBuffer, strlen(urlBuffer));
+	time_t timeout = os.now_tz() + 5; // 5 seconds timeout  
+	
+	DEBUG_PRINTLN(urlBuffer);
+	client->write((uint8_t *)urlBuffer, strlen(urlBuffer));
 
-  while(!client->available() && os.now_tz() < timeout) {
-  	yield();
-  }
-
-  bzero(ether_buffer, ETHER_BUFFER_SIZE);
-  
-  while(client->available()) {
-    client->read((uint8_t*)ether_buffer, ETHER_BUFFER_SIZE);
-    yield();
-  }
-  client->stop();
-  delete client;
-
-  peel_http_header();
-  getweather_callback(0, 0, ETHER_BUFFER_SIZE);
+	while(!client->available() && os.now_tz() < timeout) {
+		delay(0);
+	}
+		
+	if(!client->available()) { DEBUG_PRINTLN(F("timeout!!!")); }
+	else {
+		bzero(ether_buffer, ETHER_BUFFER_SIZE);
+		while(client->available()) {
+			client->read((uint8_t*)ether_buffer, ETHER_BUFFER_SIZE);
+			delay(0);
+		}
+		client->stop();
+		peel_http_header();
+		getweather_callback(0, 0, ETHER_BUFFER_SIZE);
+	}
+	client->stop();
+	
 #else
   uint16_t _port = ether.hisport; // save current port number
   ether.hisport = 80;
@@ -277,8 +299,8 @@ void GetWeather() {
   }
 
   BufferFiller bf = tmp_buffer;
-  char tmp[100];
-  read_from_file(wtopts_filename, tmp, 100);
+  char tmp[255];
+  read_from_file(wtopts_filename, tmp, 255);
   bf.emit_p(PSTR("$D.py?loc=$E&key=$E&fwv=$D&wto=$S"),
                 (int) os.options[OPTION_USE_WEATHER],
                 ADDR_NVM_LOCATION,
@@ -312,6 +334,7 @@ void GetWeather() {
   strcat(urlBuffer, server->h_name);
   strcat(urlBuffer, "\r\n\r\n");
   
+  DEBUG_PRINTLN(urlBuffer);
   client.write((uint8_t *)urlBuffer, strlen(urlBuffer));
   
   bzero(ether_buffer, ETHER_BUFFER_SIZE);

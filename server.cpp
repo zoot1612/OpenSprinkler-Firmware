@@ -2009,7 +2009,7 @@ void on_sta_update() {
 
 void on_sta_upload_fin() {
   if(!process_password()) {
-    Update.reset();
+    Update.end(false);
     return;
   }
   // finish update and check error

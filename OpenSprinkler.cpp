@@ -429,7 +429,7 @@ byte OpenSprinkler::start_ether() {
     IPAddress dns(options+OPTION_DNS_IP1);  
   	Ethernet.begin((uint8_t*)tmp_buffer, staticip, dns, gateway);
   }
-  if(Ethernet.linkStatus() != LinkON) return 0;
+  //if(Ethernet.linkStatus() != LinkON) return 0;
   return 1;
 }
 #else
@@ -1502,18 +1502,20 @@ void OpenSprinkler::switch_remotestation(RemoteStationData *data, bool turnon) {
   ulong port = hex2ulong(data->port, sizeof(data->port));
 
   #ifdef ESP8266
-	Client *client;
-	if(m_server)    
-	  client = new EthernetClient();
+  extern EthernetClient g_etherClient;
+  extern WiFiClient g_wifiClient;
+  Client *client;
+	if (m_server)
+	  client = &g_etherClient;
 	else
-		client = new WiFiClient();
-  
+	  client = &g_wifiClient;
+	    
   byte cip[4];
   cip[0] = ip>>24;
   cip[1] = (ip>>16)&0xff;
   cip[2] = (ip>>8)&0xff;
   cip[3] = ip&0xff;
-  if(!client->connect(IPAddress(cip), port))	{delete client; return;}
+  if(!client->connect(IPAddress(cip), port))	{return;}
 
   char *p = tmp_buffer + sizeof(RemoteStationData) + 1;
   BufferFiller bf = p;
@@ -1529,16 +1531,15 @@ void OpenSprinkler::switch_remotestation(RemoteStationData *data, bool turnon) {
   client->write((uint8_t *)p, strlen(p));
 
   while(!client->available() && now_tz() < timeout) {
-  	yield();
+  	delay(0);
   }
 
   bzero(ether_buffer, ETHER_BUFFER_SIZE);
   while(client->available()) {
     client->read((uint8_t*)ether_buffer, ETHER_BUFFER_SIZE);
-    yield();
+    delay(0);
   }
   client->stop();
-  delete client;
   //httpget_callback(0, 0, ETHER_BUFFER_SIZE);  
   
   #else
@@ -1628,13 +1629,15 @@ void OpenSprinkler::switch_httpstation(HTTPStationData *data, bool turnon) {
 #if defined(ARDUINO)
 
   #ifdef ESP8266
-	Client *client;
+  extern EthernetClient g_etherClient;
+  extern WiFiClient g_wifiClient;
+  Client *client;
 	if (m_server)
-		client = new EthernetClient();
+	  client = &g_etherClient;
 	else
-  	client = new WiFiClient();
-  	
-  if(!client->connect(server, atoi(port))) {delete client; return;}
+	  client = &g_wifiClient;
+  
+  if(!client->connect(server, atoi(port))) {return;}
   
   char getBuffer[255];
   sprintf(getBuffer, "GET /%s HTTP/1.0\r\nHOST: *\r\n\r\n", cmd);
@@ -1645,17 +1648,16 @@ void OpenSprinkler::switch_httpstation(HTTPStationData *data, bool turnon) {
   client->write((uint8_t *)getBuffer, strlen(getBuffer));
 
   while(!client->available() && now_tz() < timeout) {
-  	yield();
+  	delay(0);
   }
 
   bzero(ether_buffer, ETHER_BUFFER_SIZE);
   while(client->available()) {
     client->read((uint8_t*)ether_buffer, ETHER_BUFFER_SIZE);
-    yield();
+    delay(0);
   }
   
   client->stop();
-  delete client;
   
   #else
   
