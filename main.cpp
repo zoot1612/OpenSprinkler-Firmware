@@ -586,8 +586,21 @@ void do_loop()
   // The main control loop runs once every second
   if (curr_time != last_time) {
 #if defined(ESP8266)
-		//os.lcd.setCursor(0, -1);
-		//os.lcd.print(ESP.getFreeHeap());
+/*
+		static uint16_t lastHeap = 0;
+		static uint32_t lastHeapTime = 0;
+		uint16_t heap = ESP.getFreeHeap();
+		if(heap != lastHeap) {
+			os.lcd.setCursor(0, -1);
+			os.lcd.print(heap);
+			DEBUG_PRINT(F("Heap:"));
+			DEBUG_PRINT(heap);
+			DEBUG_PRINT("|");
+			DEBUG_PRINTLN(curr_time - lastHeapTime);
+			lastHeap = heap;
+			lastHeapTime = curr_time;
+		}
+*/
 #endif
   
     last_time = curr_time;
@@ -1346,8 +1359,10 @@ void push_message(byte type, uint32_t lval, float fval, const char* sval) {
   Client *client;
 	if (m_server)
 	  client = &g_etherClient;
-	else
+	else {
+		g_wifiClient = WiFiClient();
 	  client = &g_wifiClient;
+	}
     
   if(!client->connect(server, 80)) {
     return;

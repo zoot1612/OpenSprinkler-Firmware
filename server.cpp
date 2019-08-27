@@ -1939,6 +1939,16 @@ void server_json_all() {
   handle_return(HTML_OK);
 }
 
+void server_json_debug() {
+#ifdef ESP8266
+  rewind_ether_buffer();
+
+  print_json_header();
+  bfill.emit_p(PSTR("\"build\":\"$S\",\"heap\":$D}"), __DATE__, (uint16_t)ESP.getFreeHeap());
+  handle_return(HTML_OK);	
+#endif
+}
+
 typedef void (*URLHandler)(void);
 
 /* Server function urls
@@ -1968,7 +1978,11 @@ const char _url_keys[] PROGMEM =
   "dl"
   "su"
   "cu"
-  "ja";
+  "ja"
+#if defined(ESP8266)  
+  "db"
+#endif
+  ;
 
 // Server function handlers
 URLHandler urls[] = {
@@ -1992,7 +2006,10 @@ URLHandler urls[] = {
   server_delete_log,      // dl
   server_view_scripturl,  // su
   server_change_scripturl,// cu
-  server_json_all         // ja
+  server_json_all,        // ja
+#if defined(ESP8266)  
+  server_json_debug,			// db
+#endif
 };
 
 // handle Ethernet request

@@ -167,8 +167,10 @@ void GetWeather() {
   Client *client;
 	if (m_server)
 	  client = &g_etherClient;
-	else
+	else {
+		g_wifiClient = WiFiClient();
 	  client = &g_wifiClient;
+	}
 	  
 	if(!m_server) {
 		if (os.state!=OS_STATE_CONNECTED || WiFi.status()!=WL_CONNECTED) return;

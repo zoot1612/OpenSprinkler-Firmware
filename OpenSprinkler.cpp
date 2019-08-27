@@ -1507,8 +1507,10 @@ void OpenSprinkler::switch_remotestation(RemoteStationData *data, bool turnon) {
   Client *client;
 	if (m_server)
 	  client = &g_etherClient;
-	else
+	else {
+		g_wifiClient = WiFiClient();
 	  client = &g_wifiClient;
+	}
 	    
   byte cip[4];
   cip[0] = ip>>24;
@@ -1634,8 +1636,10 @@ void OpenSprinkler::switch_httpstation(HTTPStationData *data, bool turnon) {
   Client *client;
 	if (m_server)
 	  client = &g_etherClient;
-	else
+	else {
+		g_wifiClient = WiFiClient();
 	  client = &g_wifiClient;
+	}
   
   if(!client->connect(server, atoi(port))) {return;}
   
