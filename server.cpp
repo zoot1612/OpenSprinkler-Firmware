@@ -1944,7 +1944,8 @@ void server_json_debug() {
   rewind_ether_buffer();
 
   print_json_header();
-  bfill.emit_p(PSTR("\"build\":\"$S\",\"heap\":$D}"), __DATE__, (uint16_t)ESP.getFreeHeap());
+  bfill.emit_p(PSTR("\"build\":\"$S\",\"time\":\"$S\",\"heap\":$D}"),
+  						 __DATE__, __TIME__, (uint16_t)ESP.getFreeHeap());
   handle_return(HTML_OK);	
 #endif
 }

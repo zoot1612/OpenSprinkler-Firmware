@@ -25,6 +25,6 @@ void setup() {
 void loop() {
   do_loop();
 #if defined(ESP8266)
-  tcpCleanup();
+  //tcpCleanup();
 #endif
 }

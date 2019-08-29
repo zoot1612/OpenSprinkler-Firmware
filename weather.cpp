@@ -162,16 +162,15 @@ void GetWeather() {
 
 #if defined(ESP8266)
 #define NTRIES 3
-  extern EthernetClient g_etherClient;
-  extern WiFiClient g_wifiClient;
+  EthernetClient etherClient;
+  WiFiClient wifiClient;
   Client *client;
 	if (m_server)
-	  client = &g_etherClient;
+	  client = &etherClient;
 	else {
-		g_wifiClient = WiFiClient();
-	  client = &g_wifiClient;
+	  client = &wifiClient;
 	}
-	  
+
 	if(!m_server) {
 		if (os.state!=OS_STATE_CONNECTED || WiFi.status()!=WL_CONNECTED) return;
 	}
@@ -183,6 +182,7 @@ void GetWeather() {
   }
   if(nt==NTRIES) {
   	DEBUG_PRINTLN(F("connection FAILED!"));
+  	client->stop();
   	return;
   } else {
   	DEBUG_PRINTLN(F("connection succeeded"));

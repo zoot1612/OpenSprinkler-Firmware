@@ -1502,14 +1502,13 @@ void OpenSprinkler::switch_remotestation(RemoteStationData *data, bool turnon) {
   ulong port = hex2ulong(data->port, sizeof(data->port));
 
   #ifdef ESP8266
-  extern EthernetClient g_etherClient;
-  extern WiFiClient g_wifiClient;
+  EthernetClient etherClient;
+  WiFiClient wifiClient;
   Client *client;
 	if (m_server)
-	  client = &g_etherClient;
+	  client = &etherClient;
 	else {
-		g_wifiClient = WiFiClient();
-	  client = &g_wifiClient;
+	  client = &wifiClient;
 	}
 	    
   byte cip[4];
@@ -1517,7 +1516,10 @@ void OpenSprinkler::switch_remotestation(RemoteStationData *data, bool turnon) {
   cip[1] = (ip>>16)&0xff;
   cip[2] = (ip>>8)&0xff;
   cip[3] = ip&0xff;
-  if(!client->connect(IPAddress(cip), port))	{return;}
+  if(!client->connect(IPAddress(cip), port))	{
+  	client->stop();
+  	return;
+  }
 
   char *p = tmp_buffer + sizeof(RemoteStationData) + 1;
   BufferFiller bf = p;
@@ -1631,17 +1633,19 @@ void OpenSprinkler::switch_httpstation(HTTPStationData *data, bool turnon) {
 #if defined(ARDUINO)
 
   #ifdef ESP8266
-  extern EthernetClient g_etherClient;
-  extern WiFiClient g_wifiClient;
+  EthernetClient etherClient;
+  WiFiClient wifiClient;
   Client *client;
 	if (m_server)
-	  client = &g_etherClient;
+	  client = &etherClient;
 	else {
-		g_wifiClient = WiFiClient();
-	  client = &g_wifiClient;
+	  client = &wifiClient;
 	}
   
-  if(!client->connect(server, atoi(port))) {return;}
+  if(!client->connect(server, atoi(port))) {
+  	client->stop();
+  	return;
+  }
   
   char getBuffer[255];
   sprintf(getBuffer, "GET /%s HTTP/1.0\r\nHOST: *\r\n\r\n", cmd);
