@@ -781,6 +781,8 @@ void OpenSprinkler::begin() {
 
 	nvdata.sunrise_time = 360;	// 6:00am default sunrise
 	nvdata.sunset_time = 1080;	// 6:00pm default sunset
+	nvdata.ban_start_time = 0;	// 0 default ban start is none
+	nvdata.ban_end_time = 0;	// 0 default ban end is none
 	nvdata.reboot_cause = REBOOT_CAUSE_POWERON;
 	
 	nboards = 1;
@@ -1346,7 +1348,8 @@ void OpenSprinkler::attribs_save() {
 			at.igs = (attrib_igs[bid]>>s) & 1;
 			at.mas2= (attrib_mas2[bid]>>s)& 1;
 			at.igs2= (attrib_igs2[bid]>>s) & 1;
-			at.igrd= (attrib_igrd[bid]>>s) & 1;			 
+			at.igrd= (attrib_igrd[bid]>>s) & 1;
+			at.igbn= (attrib_igbn[bid]>>s) & 1;
 			at.dis = (attrib_dis[bid]>>s) & 1;
 			at.seq = (attrib_seq[bid]>>s) & 1;
 			at.gid = 0;
@@ -1370,6 +1373,7 @@ void OpenSprinkler::attribs_load() {
 	memset(attrib_mas2, 0, nboards);
 	memset(attrib_igs2, 0, nboards);
 	memset(attrib_igrd, 0, nboards);
+	memset(attrib_igbn, 0, nboards);
 	memset(attrib_dis, 0, nboards);
 	memset(attrib_seq, 0, nboards);
 	memset(attrib_spe, 0, nboards);
@@ -1382,6 +1386,7 @@ void OpenSprinkler::attribs_load() {
 			attrib_mas2[bid]|= (at.mas2<<s);
 			attrib_igs2[bid]|= (at.igs2<<s);
 			attrib_igrd[bid]|= (at.igrd<<s);
+			attrib_igbn[bid]|= (at.igbn<<s);
 			attrib_dis[bid] |= (at.dis<<s);
 			attrib_seq[bid] |= (at.seq<<s);
 			file_read_block(STATIONS_FILENAME, &ty, (uint32_t)sid*sizeof(StationData)+offsetof(StationData, type), 1);
