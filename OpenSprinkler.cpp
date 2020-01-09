@@ -62,6 +62,7 @@ byte OpenSprinkler::attrib_igs[MAX_NUM_BOARDS];
 byte OpenSprinkler::attrib_mas2[MAX_NUM_BOARDS];
 byte OpenSprinkler::attrib_igs2[MAX_NUM_BOARDS];
 byte OpenSprinkler::attrib_igrd[MAX_NUM_BOARDS];
+byte OpenSprinkler::attrib_igbn[MAX_NUM_BOARDS];
 byte OpenSprinkler::attrib_dis[MAX_NUM_BOARDS];
 byte OpenSprinkler::attrib_seq[MAX_NUM_BOARDS];
 byte OpenSprinkler::attrib_spe[MAX_NUM_BOARDS];
