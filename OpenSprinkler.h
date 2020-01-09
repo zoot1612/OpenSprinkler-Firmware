@@ -61,6 +61,8 @@ struct NVConData {
 	uint16_t sunrise_time;	// sunrise time (in minutes)
 	uint16_t sunset_time;		// sunset time (in minutes)
 	uint32_t rd_stop_time;	// rain delay stop time
+	uint32_t ban_start_time;	// irrigation ban start
+	uint32_t ban_end_time;	// irrigation ban end
 	uint32_t external_ip;		// external ip
 	uint8_t  reboot_cause;	// reboot cause
 };
@@ -73,7 +75,7 @@ struct StationAttrib {	// station attributes
 	byte seq:1;
 	byte igs2:1;// ignore sensor 2
 	byte igrd:1;// ignore rain delay
-	byte unused:1;
+	byte igbn:1;// ignore ban
 	
 	byte gid:4; // group id: reserved for the future
 	byte dummy:4;
@@ -130,6 +132,7 @@ struct ConStatus {
 	byte sensor2:1;						// sensor2 status bit (when set, sensor2 on is detected)
 	byte sensor1_active:1;		// sensor1 active bit (when set, sensor1 is activated)
 	byte sensor2_active:1;		// sensor2 active bit (when set, sensor2 is activated)
+	byte ban_active:1;		// ban active bit (when set, ban is activate)
 };
 
 extern const char iopt_json_names[];
@@ -168,6 +171,7 @@ public:
 	static byte attrib_igs[];
 	static byte attrib_mas2[];
 	static byte attrib_igs2[];
+	static byte attrib_igbn[];
 	static byte attrib_igrd[];
 	static byte attrib_dis[];
 	static byte attrib_seq[];
