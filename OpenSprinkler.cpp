@@ -2074,6 +2074,7 @@ void OpenSprinkler::raindelay_stop() {
 
 /** Reset irrigation ban */
 void OpenSprinkler::ban_reset() {
+	status.ban_active = 0;
 	nvdata.ban_start_time = 0;
 	nvdata.ban_end_time = 0;
 	nvdata_save();
@@ -2081,6 +2082,7 @@ void OpenSprinkler::ban_reset() {
 
 /** Set irrigation ban */
 void OpenSprinkler::ban_set() {
+	status.ban_active = 1;
 	/** To be done */
 }
 
