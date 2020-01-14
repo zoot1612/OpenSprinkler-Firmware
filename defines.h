@@ -75,6 +75,8 @@ typedef unsigned long ulong;
 #define IFTTT_STATION_RUN     0x20
 #define IFTTT_SENSOR2         0x40
 #define IFTTT_RAINDELAY				0x80
+#define IFTTT_IRRIGATION_BAN  0x90
+
 
 /** HTTP request macro defines */
 #define HTTP_RQT_SUCCESS			 0
@@ -204,6 +206,7 @@ enum {
 	IOPT_SENSOR1_OFF_DELAY,
 	IOPT_SENSOR2_ON_DELAY,
 	IOPT_SENSOR2_OFF_DELAY,
+	IOPT_IRRIGATION_BAN_SET,
 	IOPT_SUBNET_MASK1,
 	IOPT_SUBNET_MASK2,
 	IOPT_SUBNET_MASK3,
@@ -236,6 +239,7 @@ enum {
 #define LOGDATA_FLOWSENSE  0x04
 #define LOGDATA_SENSOR2    0x05
 #define LOGDATA_CURRENT    0x80
+#define LOGDATA_BAN        0x90
 
 #undef OS_HW_VERSION
 
