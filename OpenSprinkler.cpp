@@ -156,6 +156,7 @@ const char iopt_json_names[] PROGMEM =
 	"sn1of"
 	"sn2on"
 	"sn2of"
+	"banre"
 	"subn1"
 	"subn2"
 	"subn3"
@@ -241,6 +242,7 @@ const char iopt_prompts[] PROGMEM =
 	"Sn1 off adjust: "
 	"Sn2 on adjust:  "
 	"Sn2 off adjust: "
+	"Reset Ban?      "
 	"Subnet mask1:   "
 	"Subnet mask2:   "
 	"Subnet mask3:   "
@@ -309,6 +311,7 @@ const byte iopt_max[] PROGMEM = {
 	255,
 	255,
 	255,
+	1,
 	255,
 	255,
 	255,
@@ -385,6 +388,7 @@ byte OpenSprinkler::iopts[] = {
 	0,	// sensor 1 off delay
 	0,	// sensor 2 on delay
 	0,	// sensor 2 off delay
+	0,	// irrigation ban? 
 	255,// subnet mask 1
 	255,// subnet mask 2
 	255,// subnet mask 3
