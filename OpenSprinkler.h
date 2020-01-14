@@ -238,6 +238,8 @@ public:
 	static void disable();					// disable controller operation, all stations will be closed immediately
 	static void raindelay_start();	// start raindelay
 	static void raindelay_stop();		// stop rain delay
+	static void ban_reset();		// reset irrigation ban	
+	static void ban_set();		// set irrigation ban	
 	static void detect_binarysensor_status(ulong);// update binary (rain, soil) sensor status
 	static byte detect_programswitch_status(ulong); // get program switch status
 	static void sensor_resetall();
