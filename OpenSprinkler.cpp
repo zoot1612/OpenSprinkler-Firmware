@@ -2068,6 +2068,18 @@ void OpenSprinkler::raindelay_stop() {
 	nvdata_save();
 }
 
+/** Reset irrigation ban */
+void OpenSprinkler::ban_reset() {
+	nvdata.ban_start_time = 0;
+	nvdata.ban_end_time = 0;
+	nvdata_save();
+}
+
+/** Set irrigation ban */
+void OpenSprinkler::ban_set() {
+	/** To be done */
+}
+
 /** LCD and button functions */
 #if defined(ARDUINO)		// AVR LCD and button functions
 /** print a program memory string */
