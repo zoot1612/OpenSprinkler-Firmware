@@ -508,6 +508,7 @@ void server_json_stations_main() {
 	server_json_stations_attrib(PSTR("ignore_rain"), os.attrib_igrd);  
 	server_json_stations_attrib(PSTR("ignore_sn1"), os.attrib_igs);
 	server_json_stations_attrib(PSTR("ignore_sn2"), os.attrib_igs2);
+	server_json_stations_attrib(PSTR("ignore_ban"), os.attrib_igbn);
 	server_json_stations_attrib(PSTR("stn_dis"), os.attrib_dis);
 	server_json_stations_attrib(PSTR("stn_seq"), os.attrib_seq);
 	server_json_stations_attrib(PSTR("stn_spe"), os.attrib_spe);
@@ -614,6 +615,7 @@ void server_change_stations() {
 	server_change_stations_attrib(p, 'i', os.attrib_igrd); // ignore rain delay
 	server_change_stations_attrib(p, 'j', os.attrib_igs); // ignore sensor1
 	server_change_stations_attrib(p, 'k', os.attrib_igs2); // ignore sensor2
+	server_change_stations_attrib(p, 'b', os.attrib_igbn); // ignore ban
 	server_change_stations_attrib(p, 'n', os.attrib_mas2); // master2
 	server_change_stations_attrib(p, 'd', os.attrib_dis); // disable
 	server_change_stations_attrib(p, 'q', os.attrib_seq); // sequential
