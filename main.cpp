@@ -657,6 +657,25 @@ void do_loop()
 		
 		
 		// ===== Check if irrigation ban in place =====
+		byte ban_active = 0;
+		byte day_t = day(curr_time);
+		byte month_t = month(curr_time);
+		if (os.nvdata.ban_start_time = 0) {
+			ban_active = 0;
+		} else {
+			if (os.nvdata.ban_start_time > os.nvdata.ban_end_time) {
+				if (month_t >= ban_month_start || month_t<= ban_month_stop) {
+					byte ban_active = 1;
+				}
+			} else {
+				if (month_t >= ban_month_start & month_t <= ban_month_stop) {
+					byte ban_active = 1;
+				}
+			}
+		}
+
+
+		
 		
 
 		// ====== Schedule program data ======
