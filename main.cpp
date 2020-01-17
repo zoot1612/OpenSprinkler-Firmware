@@ -655,6 +655,9 @@ void do_loop()
 			if(pd.nprograms > 1)	manual_start_program(2, 0);
 		}
 		
+		
+		// ===== Check if irrigation ban in place =====
+		
 
 		// ====== Schedule program data ======
 		ulong curr_minute = curr_time / 60;
